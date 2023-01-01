@@ -33,47 +33,73 @@ class TransactionList extends StatelessWidget {
               itemCount: transactions.length,
               itemBuilder: (context, index) {
                 return Card(
-                  child: Row(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.symmetric(
-                          vertical: 10,
-                          horizontal: 15,
-                        ),
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Theme.of(context).primaryColor,
-                            width: 2,
-                          ),
-                        ),
-                        padding: EdgeInsets.all(10),
-                        child: Text(
-                          '\$ ${transactions[index].amount.toStringAsFixed(2)}', //accessing the transaction at the current index and get the amount
-                          //'\$ ' + tx.amount.toString(),
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                            color: Theme.of(context).primaryColor,
-                          ),
-                        ), // use toString as text widget is expecting a string as their arguments
+                  margin: EdgeInsets.symmetric(
+                    horizontal: 5,
+                    vertical: 8,
+                  ),
+                  elevation: 5,
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      radius: 30,
+                      child: Padding(
+                        padding: EdgeInsets.all(6),
+                        child: FittedBox(
+                            child: Text('\$${transactions[index].amount}')),
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            transactions[index].title,
-                            style: Theme.of(context).textTheme.headline6,
-                          ),
-                          Text(
-                            DateFormat('dd MMM yyyy')
-                                .format(transactions[index].date),
-                            style: TextStyle(color: Colors.grey),
-                          )
-                        ],
-                      ),
-                    ],
+                    ),
+                    title: Text(
+                      transactions[index].title,
+                      style: Theme.of(context).textTheme.headline6,
+                    ),
+                    subtitle: Text(
+                      DateFormat('dd MMM yyyy')
+                          .format(transactions[index].date),
+                      style: TextStyle(color: Colors.grey),
+                    ),
                   ),
                 );
+                // return Card(
+                //   child: Row(
+                //     children: [
+                //       Container(
+                //         margin: EdgeInsets.symmetric(
+                //           vertical: 10,
+                //           horizontal: 15,
+                //         ),
+                //         decoration: BoxDecoration(
+                //           border: Border.all(
+                //             color: Theme.of(context).primaryColor,
+                //             width: 2,
+                //           ),
+                //         ),
+                //         padding: EdgeInsets.all(10),
+                //         child: Text(
+                //           '\$ ${transactions[index].amount.toStringAsFixed(2)}', //accessing the transaction at the current index and get the amount
+                //           //'\$ ' + tx.amount.toString(),
+                //           style: TextStyle(
+                //             fontWeight: FontWeight.bold,
+                //             fontSize: 20,
+                //             color: Theme.of(context).primaryColor,
+                //           ),
+                //         ), // use toString as text widget is expecting a string as their arguments
+                //       ),
+                //       Column(
+                //         crossAxisAlignment: CrossAxisAlignment.start,
+                //         children: [
+                //           Text(
+                //             transactions[index].title,
+                //             style: Theme.of(context).textTheme.headline6,
+                //           ),
+                //           Text(
+                //             DateFormat('dd MMM yyyy')
+                //                 .format(transactions[index].date),
+                //             style: TextStyle(color: Colors.grey),
+                //           )
+                //         ],
+                //       ),
+                //     ],
+                //   ),
+                // );
               },
             ),
     );

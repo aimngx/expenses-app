@@ -33,7 +33,9 @@ class Chart extends StatelessWidget {
                 1), //use substring to get only the first letter from index 0 and end on 1
         'amount': totalSum,
       };
-    });
+    })
+        .reversed
+        .toList(); //reverse the list and use toList sbb reverese return iterable
   }
 
   double get totalSpending {
