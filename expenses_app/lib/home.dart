@@ -47,6 +47,13 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  //delete the item using the unique identifier which is the id
+  void _deleteTransaction(String id) {
+    setState(() {
+      _userTransaction.removeWhere((tx) => tx.id == id);
+    });
+  }
+
   //the value of context (ctx) is accepted as arguments
   void _startAddNewTransaction(BuildContext ctx) {
     showModalBottomSheet(
@@ -79,7 +86,10 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           children: [
             Chart(recentTransactions: _recentTransactions),
-            TransactionList(transactions: _userTransaction)
+            TransactionList(
+              transactions: _userTransaction,
+              deleteTx: _deleteTransaction,
+            )
           ],
         ),
       ),

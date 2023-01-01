@@ -4,8 +4,10 @@ import 'package:intl/intl.dart';
 
 class TransactionList extends StatelessWidget {
   final List<Transaction> transactions;
+  final Function deleteTx;
 
-  TransactionList({super.key, required this.transactions});
+  TransactionList(
+      {super.key, required this.transactions, required this.deleteTx});
 
   @override
   Widget build(BuildContext context) {
@@ -56,6 +58,13 @@ class TransactionList extends StatelessWidget {
                           .format(transactions[index].date),
                       style: TextStyle(color: Colors.grey),
                     ),
+                    trailing: IconButton(
+                        //used anonymous function sbb we need to pass arguments dkt delete Tx, tapi, onPressed tak accept any argument. So, we use the anonymous function to call our deleteTx function and pass the argument id
+                        onPressed: () => deleteTx(transactions[index].id),
+                        icon: Icon(
+                          Icons.delete,
+                          color: Theme.of(context).errorColor,
+                        )),
                   ),
                 );
                 // return Card(
