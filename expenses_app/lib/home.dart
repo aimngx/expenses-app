@@ -33,12 +33,13 @@ class _HomePageState extends State<HomePage> {
   //where method returns iterable but we want list, so sama jugak mcm cara map, we use .toList()
 
   //create method
-  void _addNewTransaction(String txTitle, double txAmount) {
+  void _addNewTransaction(
+      String txTitle, double txAmount, DateTime chosenDate) {
     final newTx = Transaction(
       id: DateTime.now().toString(),
       title: txTitle,
       amount: txAmount,
-      date: DateTime.now(),
+      date: chosenDate,
     );
 
     setState(() {

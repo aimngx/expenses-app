@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 //creating new transaction
 
@@ -13,26 +14,48 @@ class NewTransaction extends StatefulWidget {
 
 //state class. So we use widget.xxx to access the widget class punya method etc
 class _NewTransactionState extends State<NewTransaction> {
-  final titleController = TextEditingController();
+  final _titleController = TextEditingController();
+  final _amountController = TextEditingController();
+  DateTime?
+      _selectedDate; //put ? so that initially, it is null, but later is changed. When we called it down later, we put _selectedDate! with '!' to tell change it from nullable to non-nullable
 
-  final amountController = TextEditingController();
-
-  void submitData() {
-    final enteredTitle = titleController.text;
+  void _submitData() {
+    if (_amountController.text.isEmpty) {
+      return;
+    }
+    final enteredTitle = _titleController.text;
     final enteredAmount =
-        double.parse(amountController.text); //change back the string to double
+        double.parse(_amountController.text); //change back the string to double
 
-    if (enteredTitle.isEmpty || enteredAmount <= 0) {
+    if (enteredTitle.isEmpty || enteredAmount <= 0 || _selectedDate == null) {
       return; //break the code
     }
 
     widget.addTx(
       enteredTitle,
       enteredAmount,
+      _selectedDate,
     );
 
     //automatically close the top most screen (ie the modal screen) once we're done
     Navigator.of(context).pop();
+  }
+
+  void _presentDatePicker() {
+    showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2022),
+      lastDate: DateTime.now(),
+    ).then((pickedDate) {
+      if (pickedDate == null) {
+        return;
+      }
+      setState(() {
+        _selectedDate = pickedDate;
+      });
+    });
+    //the .then allow us to provide a function which is executed once the future resolved to a value (after user chose a date)
   }
 
   @override
@@ -47,27 +70,52 @@ class _NewTransactionState extends State<NewTransaction> {
               decoration: InputDecoration(labelText: 'Title'),
               //onChanged is fired on every keystroke
               // onChanged: (value) => titleInput = value,
-              controller: titleController,
-              onSubmitted: (_) => submitData(),
+              controller: _titleController,
+              onSubmitted: (_) => _submitData(),
             ),
             TextField(
               decoration: InputDecoration(labelText: 'Amount'),
               //onChanged: (value) => amountInput = value,
-              controller: amountController,
+              controller: _amountController,
               keyboardType: TextInputType.numberWithOptions(decimal: true),
               onSubmitted: (_) =>
-                  submitData(), //because on submitted required String as argument, so we use _ to tell that we dont care about it
+                  _submitData(), //because on submitted required String as argument, so we use _ to tell that we dont care about it
             ),
-            TextButton(
+            Container(
+              height: 70,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      _selectedDate == null
+                          ? 'No Date Chosen!'
+                          : 'Picked Date: ${DateFormat('dd/MM/yyyy').format(_selectedDate!)}',
+                    ),
+                  ),
+                  TextButton(
+                    style: ButtonStyle(
+                      foregroundColor: MaterialStateProperty.all(
+                          Theme.of(context).primaryColor),
+                    ),
+                    onPressed: _presentDatePicker,
+                    child: Text(
+                      'Choose Date',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  )
+                ],
+              ),
+            ),
+            ElevatedButton(
               onPressed: () {
                 // print(titleInput);
                 // print(amountInput);
-                submitData();
+                _submitData();
               },
               child: Text('Add Transaction'),
               style: ButtonStyle(
-                foregroundColor: MaterialStateProperty.all(
-                  Colors.purple,
+                backgroundColor: MaterialStateProperty.all(
+                  Theme.of(context).primaryColor,
                 ),
               ),
             )
