@@ -20,6 +20,9 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final List<Transaction> _userTransaction = [];
 
+  //show chart
+  bool _showChart = false;
+
   //for recent transactions
   List<Transaction> get _recentTransactions {
     return _userTransaction.where((element) {
@@ -72,24 +75,77 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Personal Expenses'),
-        actions: [
-          IconButton(
-            onPressed: () => _startAddNewTransaction(context),
-            icon: Icon(Icons.add),
-          )
-        ],
+    //get the orientation so that can decide what to display in what orientation mode
+    final isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
+    //store the appBar in a variable so that we can have access to its size
+    final appBar = AppBar(
+      title: Text('Personal Expenses'),
+      actions: [
+        IconButton(
+          onPressed: () => _startAddNewTransaction(context),
+          icon: Icon(Icons.add),
+        )
+      ],
+    );
+
+    //create var for transaction list widget so that it is easier to use/copy for if else statement
+    final txListWidget = Container(
+      height: (MediaQuery.of(context).size.height -
+              appBar.preferredSize.height -
+              MediaQuery.of(context).padding.top) *
+          0.7,
+      child: TransactionList(
+        transactions: _userTransaction,
+        deleteTx: _deleteTransaction,
       ),
+    );
+
+    return Scaffold(
+      appBar: appBar,
       body: SingleChildScrollView(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Chart(recentTransactions: _recentTransactions),
-            TransactionList(
-              transactions: _userTransaction,
-              deleteTx: _deleteTransaction,
-            )
+            //new way to type if statement, without using {}, syntax allowed only for if statement inside of a list (ie list of widgets/children)
+            if (isLandscape)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Show Chart'),
+                  Switch(
+                      value: _showChart,
+                      onChanged: (value) {
+                        setState(() {
+                          _showChart = value;
+                        });
+                      }),
+                ],
+              ),
+            if (!isLandscape)
+              Container(
+                height: (MediaQuery.of(context).size.height -
+                        appBar.preferredSize.height -
+                        MediaQuery.of(context).padding.top) *
+                    0.3,
+                child: Chart(
+                  recentTransactions: _recentTransactions,
+                ),
+              ),
+            if (!isLandscape) txListWidget,
+
+            if (isLandscape)
+              _showChart
+                  ? Container(
+                      height: (MediaQuery.of(context).size.height -
+                              appBar.preferredSize.height -
+                              MediaQuery.of(context).padding.top) *
+                          0.7,
+                      child: Chart(
+                        recentTransactions: _recentTransactions,
+                      ),
+                    )
+                  : txListWidget
           ],
         ),
       ),

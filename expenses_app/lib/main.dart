@@ -1,7 +1,14 @@
 import 'package:expenses_app/home.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 void main() {
+  //WidgetsFlutterBinding.ensureInitialized();
+  //set orientation so that can only potrait mode
+  // SystemChrome.setPreferredOrientations([
+  //   DeviceOrientation.portraitUp,
+  //   DeviceOrientation.portraitDown,
+  // ]);
   runApp(const MyApp());
 }
 
