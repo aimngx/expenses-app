@@ -60,6 +60,7 @@ class _HomePageState extends State<HomePage> {
   //the value of context (ctx) is accepted as arguments
   void _startAddNewTransaction(BuildContext ctx) {
     showModalBottomSheet(
+        isScrollControlled: true,
         context: ctx,
         builder: (_) {
           return GestureDetector(
