@@ -59,13 +59,24 @@ class TransactionList extends StatelessWidget {
                     DateFormat('dd MMM yyyy').format(transactions[index].date),
                     style: TextStyle(color: Colors.grey),
                   ),
-                  trailing: IconButton(
-                      //used anonymous function sbb we need to pass arguments dkt delete Tx, tapi, onPressed tak accept any argument. So, we use the anonymous function to call our deleteTx function and pass the argument id
-                      onPressed: () => deleteTx(transactions[index].id),
-                      icon: Icon(
-                        Icons.delete,
-                        color: Theme.of(context).errorColor,
-                      )),
+                  trailing: MediaQuery.of(context).size.width > 460
+                      ? TextButton.icon(
+                          onPressed: () => deleteTx(transactions[index].id),
+                          icon: Icon(Icons.delete),
+                          label: Text(
+                            'Delete',
+                            style:
+                                TextStyle(color: Theme.of(context).errorColor),
+                          ),
+                        )
+                      : IconButton(
+                          //used anonymous function sbb we need to pass arguments dkt delete Tx, tapi, onPressed tak accept any argument. So, we use the anonymous function to call our deleteTx function and pass the argument id
+                          onPressed: () => deleteTx(transactions[index].id),
+                          icon: Icon(
+                            Icons.delete,
+                            color: Theme.of(context).errorColor,
+                          ),
+                        ),
                 ),
               );
               // return Card(
