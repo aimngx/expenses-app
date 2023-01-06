@@ -14,7 +14,7 @@ class HomePage extends StatefulWidget {
   // String titleInput = '';
   // String amountInput = '';
 
-  HomePage({super.key});
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -31,7 +31,7 @@ class _HomePageState extends State<HomePage> {
     return _userTransaction.where((element) {
       return element.date.isAfter(
         DateTime.now().subtract(
-          Duration(days: 7),
+          const Duration(days: 7),
         ),
       );
     }).toList();
@@ -77,30 +77,89 @@ class _HomePageState extends State<HomePage> {
         });
   }
 
+  //builder method to cater to screen orientation
+  List<Widget> _buildLandscapeContent(
+      MediaQueryData mediaQuery, AppBar appBar, Widget txListWidget) {
+    return [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            'Show Chart',
+            style: Theme.of(context).textTheme.headline6,
+          ),
+          // use .adaptive to adapt to ios, but not all widget can use .adaptive
+          Switch.adaptive(
+              activeColor: Theme.of(context).accentColor,
+              value: _showChart,
+              onChanged: (value) {
+                setState(() {
+                  _showChart = value;
+                });
+              }),
+        ],
+      ),
+      _showChart
+          ? Container(
+              height: (mediaQuery.size.height -
+                      appBar.preferredSize.height -
+                      mediaQuery.padding.top) *
+                  0.7,
+              child: Chart(
+                recentTransactions: _recentTransactions,
+              ),
+            )
+          : txListWidget
+    ];
+  }
+
+  List<Widget> _buildPotraitContent(
+      MediaQueryData mediaQuery, AppBar appBar, Widget txListWidget) {
+    return [
+      Container(
+        height: (mediaQuery.size.height -
+                appBar.preferredSize.height -
+                mediaQuery.padding.top) *
+            0.3,
+        child: Chart(
+          recentTransactions: _recentTransactions,
+        ),
+      ),
+      txListWidget,
+    ];
+  }
+
+  //for app bar
+  Widget _buildAppBar() {
+    return Platform.isIOS
+        ? CupertinoNavigationBar(
+            middle: const Text('Personal Expenses'),
+            trailing: CupertinoButton(
+              onPressed: () => _startAddNewTransaction(context),
+              child: const Icon(CupertinoIcons.add),
+            ),
+          )
+        : AppBar(
+            title: const Text('Personal Expenses'),
+            actions: [
+              IconButton(
+                onPressed: () => _startAddNewTransaction(context),
+                icon: const Icon(Icons.add),
+              )
+            ],
+          );
+  }
+
   @override
   Widget build(BuildContext context) {
     //save the media query into the variable for better efficiency and performance (ie avoid re render the object)
     final mediaQuery = MediaQuery.of(context);
+
     //get the orientation so that can decide what to display in what orientation mode
     final isLandscape = mediaQuery.orientation == Orientation.landscape;
+
     //store the appBar in a variable so that we can have access to its size
-    final dynamic appBar = Platform.isIOS
-        ? CupertinoNavigationBar(
-            middle: Text('Personal Expenses'),
-            trailing: CupertinoButton(
-              onPressed: () => _startAddNewTransaction(context),
-              child: Icon(CupertinoIcons.add),
-            ),
-          )
-        : AppBar(
-            title: Text('Personal Expenses'),
-            actions: [
-              IconButton(
-                onPressed: () => _startAddNewTransaction(context),
-                icon: Icon(Icons.add),
-              )
-            ],
-          );
+    final dynamic appBar = _buildAppBar();
 
     //create var for transaction list widget so that it is easier to use/copy for if else statement
     final txListWidget = Container(
@@ -121,48 +180,10 @@ class _HomePageState extends State<HomePage> {
           children: [
             //new way to type if statement, without using {}, syntax allowed only for if statement inside of a list (ie list of widgets/children)
             if (isLandscape)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Show Chart',
-                    style: Theme.of(context).textTheme.headline6,
-                  ),
-                  // use .adaptive to adapt to ios, but not all widget can use .adaptive
-                  Switch.adaptive(
-                      activeColor: Theme.of(context).accentColor,
-                      value: _showChart,
-                      onChanged: (value) {
-                        setState(() {
-                          _showChart = value;
-                        });
-                      }),
-                ],
-              ),
+              ..._buildLandscapeContent(mediaQuery, appBar, txListWidget),
             if (!isLandscape)
-              Container(
-                height: (mediaQuery.size.height -
-                        appBar.preferredSize.height -
-                        mediaQuery.padding.top) *
-                    0.3,
-                child: Chart(
-                  recentTransactions: _recentTransactions,
-                ),
-              ),
-            if (!isLandscape) txListWidget,
-
-            if (isLandscape)
-              _showChart
-                  ? Container(
-                      height: (mediaQuery.size.height -
-                              appBar.preferredSize.height -
-                              mediaQuery.padding.top) *
-                          0.7,
-                      child: Chart(
-                        recentTransactions: _recentTransactions,
-                      ),
-                    )
-                  : txListWidget
+              // use spread operator ... to spread/pull the list of widget one by one to the surrounding list(ie Column)
+              ..._buildPotraitContent(mediaQuery, appBar, txListWidget),
           ],
         ),
       ),
@@ -170,8 +191,8 @@ class _HomePageState extends State<HomePage> {
 
     return Platform.isIOS
         ? CupertinoPageScaffold(
-            child: pageBody,
             navigationBar: appBar,
+            child: pageBody,
           )
         : Scaffold(
             appBar: appBar,
@@ -181,7 +202,7 @@ class _HomePageState extends State<HomePage> {
             floatingActionButton: Platform.isIOS
                 ? Container()
                 : FloatingActionButton(
-                    child: Icon(Icons.add),
+                    child: const Icon(Icons.add),
                     onPressed: () => _startAddNewTransaction(context),
                   ),
           );
